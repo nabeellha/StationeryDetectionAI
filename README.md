@@ -1,232 +1,358 @@
-# StationeryDetectionAI 🎒
+# StationeryDetectionAI
+### Stationery Object Detection Using Deep Learning
 
-A Deep Learning semester project that uses **Custom CNN and MobileNetV2 Transfer Learning** to classify stationery images into five categories.
+**StationeryDetectionAI** is a deep learning project that identifies stationery objects from uploaded images using image classification. The system recognizes five categories: Sharpener, Erasers, Markers, Pencils, and Rulers.
 
-## 1. Project Overview
+Two deep learning models were developed and compared:
+- Custom Convolutional Neural Network (CNN)
+- MobileNetV2 using Transfer Learning
 
-StationeryDetectionAI is an image classification project designed to recognize five common stationery objects using deep learning.
+MobileNetV2 was selected as the final model because it demonstrated better classification performance during sample image testing.
 
-Two deep learning approaches were implemented and compared:
+---
 
-- **Custom CNN:** A convolutional neural network developed and trained from scratch.
-- **MobileNetV2:** A pretrained convolutional neural network using transfer learning.
+## Project Information
 
-MobileNetV2 was selected as the final classification model because it demonstrated better classification behaviour during project testing.
+| Detail | Information |
+|---|---|
+| Project Name | StationeryDetectionAI |
+| Student Name | Nabiha Asim |
+| Student ID | SU92-BSCSM-F23-060 |
+| Program | BSCS-7A |
+| University | Superior University |
+| Project Type | Deep Learning / Image Classification |
+| Final Model | MobileNetV2 |
 
-The five categories are:
+---
 
-- Sharpener
-- Erasers
-- Markers
-- Pencils
-- Rulers
+## 1. Project Objectives
 
-## 2. Project Objectives
+The main objectives of this project are:
 
-- Prepare and organize a labeled stationery image dataset.
-- Explore deep learning approaches for image classification.
-- Implement a Custom CNN architecture.
-- Implement MobileNetV2 transfer learning.
-- Train and compare both models.
-- Evaluate model performance.
-- Save trained models for future predictions.
-- Develop a web interface for stationery classification.
+- Develop an image classification system for stationery objects.
+- Prepare and organize a dataset containing five stationery categories.
+- Build a Custom CNN model from scratch.
+- Implement MobileNetV2 using transfer learning.
+- Compare both models using training results and sample predictions.
+- Integrate the trained models into a web-based application.
+- Allow users to upload images and receive predicted categories with confidence scores.
 
-## 3. Dataset
+---
 
-The combined dataset contains **2,776 images** divided into three subsets.
+## 2. Supported Stationery Categories
 
-| Dataset | Number of Images |
+The system classifies images into the following five categories:
+
+| Class | Description |
+|---|---|
+| Sharpener | Identifies pencil sharpeners |
+| Erasers | Identifies erasers |
+| Markers | Identifies marker pens |
+| Pencils | Identifies pencils |
+| Rulers | Identifies measuring rulers |
+
+---
+
+## 3. Dataset Description
+
+The project uses a combined dataset containing original stationery images and additional images from a public dataset.
+
+The dataset contains five classes and was divided into three subsets:
+
+| Dataset Split | Number of Images |
 |---|---:|
 | Training | 1,929 |
 | Validation | 435 |
 | Testing | 412 |
 | **Total** | **2,776** |
 
-The dataset contains five classes:
+**Dataset Usage:**
+- Training data was used to train the models.
+- Validation data was used to monitor model performance during training.
+- Testing data was reserved for final model evaluation.
 
-- Sharpener
-- Erasers
-- Markers
-- Pencils
-- Rulers
+---
 
-Images were resized to 224 × 224 pixels before being used by the models.
+## 4. Data Preprocessing
 
-Data augmentation techniques were also applied during Custom CNN training, including:
+The following preprocessing steps were performed:
 
+- Images were organized into separate class folders.
+- Images were resized to 224 × 224 pixels.
+- Images were converted into batches for model training.
+- Pixel values were normalized according to each model's requirements.
+- Training, validation, and testing datasets were kept separate.
+- Data augmentation was applied during Custom CNN training.
+
+### Data Augmentation
+
+The Custom CNN training process included:
 - Horizontal flipping
-- Random rotation
-- Random zoom
-- Random contrast adjustment
+- Rotation
+- Zooming
+- Contrast adjustment
 
-## 4. Model Architectures
+These transformations helped introduce variations into the training images.
 
-### 4.1 Custom CNN
+---
 
-A convolutional neural network was developed using TensorFlow and Keras.
+## 5. Model 1: Custom CNN
 
-Its main components include:
+A Custom Convolutional Neural Network was developed using TensorFlow and Keras.
 
-1. Input layer (224 × 224 × 3).
-2. Data augmentation and image rescaling.
-3. Four Conv2D layers.
-4. Batch normalization.
-5. Max pooling.
-6. Global Average Pooling.
-7. Dense layer with 128 neurons.
-8. Dropout.
-9. Softmax output layer with five classes.
+### Architecture
 
-The model contains approximately 423,877 parameters.
+The model consists of:
 
-### 4.2 MobileNetV2 Transfer Learning
+1. Input layer (224 × 224 × 3)
+2. Data augmentation
+3. Rescaling layer
+4. Four convolutional layers
+5. Batch normalization layers
+6. Max pooling layers
+7. Global Average Pooling
+8. Dense layer with 128 neurons
+9. Dropout layer
+10. Output layer with five neurons and softmax activation
 
-MobileNetV2 was implemented using pretrained ImageNet weights.
+**Total Parameters:** Approximately 423,877
 
-Its main components include:
+### Training Configuration
 
-1. Input image size of 224 × 224 × 3.
-2. Image preprocessing.
-3. Pretrained MobileNetV2 feature extraction layers.
-4. Global Average Pooling.
-5. Dropout.
-6. Dense output layer with five neurons.
-7. Softmax activation.
+| Parameter | Setting |
+|---|---|
+| Framework | TensorFlow / Keras |
+| Optimizer | Adam |
+| Initial Learning Rate | 0.0001 |
+| Loss Function | Sparse Categorical Crossentropy |
+| Batch Size | 32 |
+| Maximum Epochs | 12 |
+| Class Weighting | Applied |
+| Early Stopping | Applied |
+| Learning Rate Reduction | Applied |
 
-Transfer learning allows the model to reuse features learned from a large image dataset.
+### Custom CNN Training Results
 
-## 5. Model Training and Evaluation
-
-Both models were trained using the combined stationery dataset.
-
-### Custom CNN Results
-
-The Custom CNN did not achieve satisfactory validation performance.
+Training stopped after five epochs because validation loss did not improve.
 
 | Metric | Result |
 |---|---:|
-| Training accuracy at stopping | 50.91% |
-| Best validation accuracy | 5.98% |
-| Latest validation accuracy | 9.66% |
-| Best validation loss | 1.65893 |
+| Training Accuracy at Stopping | 50.91% |
+| Best Validation Accuracy | 5.98% |
+| Latest Validation Accuracy | 9.66% |
+| Best Validation Loss | 1.65893 |
 
 Further investigation showed that the model predicted every training and validation image as the Rulers class.
 
-Therefore, the Custom CNN was not selected for final predictions.
+Average validation prediction probabilities:
 
-### MobileNetV2 Results
+| Class | Average Probability |
+|---|---:|
+| Sharpener | 18.90% |
+| Erasers | 22.53% |
+| Markers | 17.30% |
+| Pencils | 15.55% |
+| Rulers | 25.72% |
 
-MobileNetV2 demonstrated better classification behaviour during sample prediction tests.
+The model showed poor class discrimination and did not achieve satisfactory validation performance.
 
-Examples from individual predictions:
+Therefore, the Custom CNN was not selected as the final model.
 
-- Eraser image: 99.83% confidence.
-- Marker image: 81.57% confidence.
+---
 
-These are individual prediction examples, not overall test accuracy measurements.
+## 6. Model 2: MobileNetV2
 
-MobileNetV2 was selected as the final model based on its observed performance.
+MobileNetV2 was implemented using transfer learning.
 
-## 6. Model Comparison
+Transfer learning uses a pretrained model that has already learned useful image features from a large dataset. These learned features are reused for a new classification task.
+
+### Architecture
+
+The MobileNetV2 model includes:
+
+1. Input images of size 224 × 224 × 3
+2. ImageNet-pretrained MobileNetV2 base
+3. Frozen pretrained layers
+4. Global Average Pooling layer
+5. Dropout layer
+6. Dense output layer with five neurons
+7. Softmax activation
+
+| Model Information | Value |
+|---|---|
+| Base Model | MobileNetV2 |
+| Pretrained Weights | ImageNet |
+| Total Parameters | Approximately 2.26 million |
+| Trainable Parameters | Approximately 6,405 |
+| Input Size | 224 × 224 × 3 |
+| Output Classes | 5 |
+
+### Training Configuration
+
+| Parameter | Setting |
+|---|---|
+| Optimizer | Adam |
+| Learning Rate | 0.001 |
+| Loss Function | Sparse Categorical Crossentropy |
+| Epochs | 10 |
+| Input Size | 224 × 224 × 3 |
+| Output Classes | 5 |
+
+### MobileNetV2 Sample Prediction Results
+
+MobileNetV2 was tested through the web application using five sample images, one from each stationery category.
+
+| Input Image | Predicted Class | Confidence | Result |
+|---|---|---:|---|
+| Pencil | Pencils | 88.86% | Correct |
+| Marker | Markers | 81.57% | Correct |
+| Eraser | Erasers | 99.83% | Correct |
+| Ruler | Rulers | 99.74% | Correct |
+| Sharpener | Sharpener | 99.06% | Correct |
+
+**Sample Testing Result: 5 out of 5 correct predictions.**
+
+MobileNetV2 correctly classified all five tested sample images.
+
+These confidence scores represent individual predictions. They are not the model's overall test accuracy.
+
+---
+
+## 7. Comparison of Both Models
+
+Both models were tested using the same five sample images through the web application.
+
+| Test Image | MobileNetV2 | Custom CNN |
+|---|---|---|
+| Pencil | Pencils — 88.86% | Rulers — 24.18% |
+| Marker | Markers — 81.57% | Rulers — 24.19% |
+| Eraser | Erasers — 99.83% | Erasers — 24.28% |
+| Ruler | Rulers — 99.74% | Pencils — 27.72% |
+| Sharpener | Sharpener — 99.06% | Rulers — 23.84% |
+| **Correct Predictions** | **5/5** | **1/5** |
+
+### Comparison Summary
 
 | Feature | Custom CNN | MobileNetV2 |
 |---|---|---|
-| Architecture | Built from scratch | Pretrained |
-| Transfer learning | No | Yes |
-| Total parameters | 423,877 | Approximately 2.26 million |
-| Training approach | CNN training | Transfer learning |
-| Observed performance | Poor validation results | Better sample predictions |
-| Final selection | Experimental model | Selected model |
+| Model Type | Built from Scratch | Transfer Learning |
+| Pretrained Weights | No | ImageNet |
+| Total Parameters | 423,877 | Approximately 2.26 million |
+| Training Approach | Full Model Training | Frozen Pretrained Base |
+| Validation Performance | Very Poor | Full formal evaluation pending |
+| Sample Predictions | 1/5 Correct | 5/5 Correct |
+| Final Selection | Not Selected | Selected |
 
-The comparison demonstrates the practical benefits of transfer learning for this stationery image classification task.
+### Final Model Selection
 
-## 7. Technologies Used
+MobileNetV2 was selected as the final classification model because it demonstrated substantially better sample prediction behaviour than the Custom CNN.
 
-- Python
-- TensorFlow and Keras
-- MobileNetV2
-- NumPy
-- Matplotlib
-- Scikit-learn
-- Next.js
-- TypeScript
-- Tailwind CSS
-- FastAPI
-- Git and GitHub
-- Vercel
+The Custom CNN showed poor classification performance and was not selected for the final application.
 
-## 8. Web Application
+**Note:** Overall test accuracy and other evaluation metrics still need to be calculated using the complete 412-image test dataset.
 
-The project includes a web application designed to provide an easy way to classify stationery images.
+---
 
-The planned application workflow is:
+## 8. Web Application Integration
 
-1. User uploads a stationery image.
-2. The backend receives the image.
-3. The selected deep learning model processes it.
-4. The application returns the predicted stationery category and confidence score.
-5. The frontend displays the prediction.
+The project includes a web-based application that allows users to upload stationery images and receive classification results.
 
-### Main Technologies
+### Main Functionality
 
-- **Frontend:** Next.js, TypeScript and Tailwind CSS.
-- **Backend:** FastAPI.
-- **Model:** TensorFlow/Keras with MobileNetV2.
+- Upload an image of a stationery object.
+- Select a model for prediction, where available.
+- Process the uploaded image through the backend API.
+- Display the predicted stationery category.
+- Display the confidence score.
+- Display confidence scores for all five classes.
+
+### Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| Next.js | Frontend Development |
+| TypeScript | Frontend Programming |
+| Tailwind CSS | User Interface Styling |
+| FastAPI | Backend API |
+| Python | Backend Programming |
+| TensorFlow / Keras | Deep Learning Framework |
+| MobileNetV2 | Final Classification Model |
+| Custom CNN | Comparison Model |
+
+### Application Workflow
+
+1. The user uploads a stationery image through the website.
+2. The Next.js frontend sends the image to the FastAPI backend.
+3. The backend loads the selected trained model.
+4. The image is resized and prepared for prediction.
+5. The model generates class confidence scores.
+6. The backend identifies the class with the highest score.
+7. The predicted category and confidence scores are returned to the frontend.
+8. The website displays the prediction result.
+
+---
 
 ## 9. Project Structure
 
-The project includes the following main components:
+The project is organized into frontend, backend, and model files.
 
 ```text
 StationeryDetectionAI/
 │
-├── Dataset/
-│   ├── train/
-│   ├── val/
-│   └── test/
-│
-├── Stationery_Detection_AI.ipynb
-│
 ├── stationery-website/
 │   ├── model/
+│   │   ├── best_mobilenetv2_stationery.keras
+│   │   └── best_stationery_cnn (1).keras
+│   │
 │   ├── src/
-│   ├── public/
-│   ├── predict.py
-│   └── package.json
+│   │   └── app/
+│   │       ├── page.tsx
+│   │       └── globals.css
+│   │
+│   ├── api.py
+│   ├── package.json
+│   ├── README.md
+│   └── ...
 │
-└── README.md
+└── Dataset/
+    ├── Sharpener/
+    ├── erasers/
+    ├── markers/
+    ├── pencils/
+    └── rulers/
 ```
 
-The trained model files are maintained separately from the source code where necessary.
-
-## 10. Project Resources
-
-- **GitHub Repository:** [StationeryDetectionAI](https://github.com/nabeellha/StationeryDetectionAI)
-- **Live Website:** To be added after deployment.
-- **Project Report:** To be added.
-- **Presentation:** To be added.
-- **YouTube Demonstration:** To be added.
-
-## 11. Future Improvements
-
-- Collect more high-quality stationery images.
-- Improve dataset class balance.
-- Experiment with additional CNN architectures.
-- Fine-tune pretrained MobileNetV2 layers.
-- Improve prediction accuracy.
-- Add more stationery categories.
-- Complete and deploy the web application.
-- Improve the user interface and user experience.
-
-## 12. Conclusion
-
-StationeryDetectionAI demonstrates how deep learning and transfer learning can be used for image classification. Both a Custom CNN and MobileNetV2 were implemented and compared. The Custom CNN experienced poor validation performance, while MobileNetV2 showed better classification behaviour during sample testing. Therefore, MobileNetV2 was selected as the final classification model.
-
-This project provided practical experience in dataset preparation, image preprocessing, CNN development, transfer learning, model evaluation, and web application development.
+*Note: This is an overview of the main project components. The complete dataset and additional configuration files may be stored separately.*
 
 ---
 
-**Project Type:** Deep Learning Semester Project  
-**Final Selected Model:** MobileNetV2  
-**Classification Categories:** 5
+## 10. Installation and Setup
+
+### Prerequisites
+
+Install the following software:
+
+- Python
+- Node.js and npm
+- Git
+- Visual Studio Code
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/nabeellha/StationeryDetectionAI.git
+```
+
+### Step 2: Open the Website Folder
+
+```bash
+cd StationeryDetectionAI/stationery-website
+```
+
+### Step 3: Install Frontend Dependencies
+
+```bash
+npm install
+```
+
+### Step 4
