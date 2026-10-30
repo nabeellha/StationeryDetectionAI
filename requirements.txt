@@ -3,3 +3,4 @@ uvicorn[standard]==0.54.0
 tensorflow==2.21.0
 Pillow==13.0.0
 python-multipart
+gdown

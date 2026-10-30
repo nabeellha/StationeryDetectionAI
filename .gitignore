@@ -44,3 +44,8 @@ next-env.d.ts
 .venv/
 __pycache__/
 *.pyc
+# TensorFlow model files
+model/*.keras
+
+# Temporary model download tests
+*_drive_test.keras

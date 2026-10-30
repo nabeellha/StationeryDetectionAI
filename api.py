@@ -7,6 +7,8 @@ import numpy as np
 import tensorflow as tf
 import io
 from pathlib import Path
+import gdown
+import os
 
 app = FastAPI(title="Stationery Detection API")
 
@@ -34,17 +36,49 @@ CLASS_NAMES = [
 ]
 
 MODEL_FILES = {
-    "cnn": "best_stationery_cnn (1).keras",
-    "mobilenetv2": "best_mobilenetv2_stationery.keras",
+    "cnn": {
+        "filename": "best_stationery_cnn (1).keras",
+        "file_id": "1fBR7Yl2JoKskcakVHYpmFTNszQgqHRvq",
+    },
+    "mobilenetv2": {
+        "filename": "best_mobilenetv2_stationery.keras",
+        "file_id": "1z9Gg6Tlg5q_LFsVwKO3gEolZs12g8HMG",
+    },
 }
 
-# Load both trained models once when the API starts
+def download_models():
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
+
+    for model_name, details in MODEL_FILES.items():
+        model_path = MODEL_DIR / details["filename"]
+
+        if not model_path.exists():
+            print(f"Downloading {model_name} model...")
+
+            url = f"https://drive.google.com/uc?id={details['file_id']}"
+
+            gdown.download(
+                url,
+                str(model_path),
+                quiet=False
+            )
+
+        if not model_path.exists() or model_path.stat().st_size == 0:
+            raise RuntimeError(
+                f"Failed to download {model_name} model."
+            )
+
+        print(f"{model_name} model is ready!")
+
+
+download_models()
+
 models = {
     name: tf.keras.models.load_model(
-        MODEL_DIR / filename,
+        MODEL_DIR / details["filename"],
         compile=False
     )
-    for name, filename in MODEL_FILES.items()
+    for name, details in MODEL_FILES.items()
 }
 
 
