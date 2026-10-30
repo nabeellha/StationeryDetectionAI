@@ -1,12 +1,14 @@
 # Stationery Detection AI
 
-A Deep Learning semester project that uses a custom Convolutional Neural Network (CNN) to classify stationery images into five categories.
+A Deep Learning semester project that uses **MobileNetV2 Transfer Learning** to classify stationery images into five categories.
 
-## Project Overview
+## 1. Project Overview
 
-Stationery Detection AI aims to recognize common stationery objects from images. The project uses TensorFlow and Keras to build and train a custom CNN for image classification.
+Stationery Detection AI is an image classification project designed to recognize five common stationery objects using deep learning.
 
-The five target classes are:
+The project uses a pretrained MobileNetV2 model with a custom classification head to predict the stationery category from an input image.
+
+The five categories are:
 
 - Sharpener
 - Erasers
@@ -14,59 +16,107 @@ The five target classes are:
 - Pencils
 - Rulers
 
-## Objectives
+## 2. Project Objectives
 
-- Prepare and organize a labeled image dataset.
-- Build a custom CNN for image classification.
-- Train and evaluate the model.
-- Save the trained model for inference.
-- Develop a web application to demonstrate predictions and explain the project code.
+- Prepare and organize a labeled stationery image dataset.
+- Explore deep learning approaches for image classification.
+- Implement MobileNetV2 transfer learning.
+- Train and evaluate a five-class classification model.
+- Save the trained model for future predictions.
+- Develop a web interface to present the project and its functionality.
 
-## Model Architecture
+## 3. Model Architecture
 
-The custom CNN includes:
+The saved model uses MobileNetV2 with the following architecture:
 
-1. Image augmentation
-2. Image rescaling
-3. Convolutional layers with ReLU activation
-4. Max-pooling layers
-5. Global average pooling
-6. A dense layer with dropout
-7. A five-class softmax output layer
+1. Input image of size 224 × 224 × 3.
+2. Image rescaling to the range -1 to 1.
+3. Pretrained MobileNetV2 feature extraction layers.
+4. Global Average Pooling.
+5. Dropout layer.
+6. Dense output layer with five neurons and softmax activation.
 
-## Dataset
+The pretrained MobileNetV2 layers were initially frozen during training.
 
-The dataset contains images organized into five class folders. The current dataset has approximately 245 usable images, subject to image-loading and validation checks.
+## 4. Dataset
 
-The dataset source and any applicable image licenses will be documented here.
+The dataset is organized into five class folders:
 
-## Technologies
+- Sharpener
+- Erasers
+- Markers
+- Pencils
+- Rulers
+
+The dataset contains approximately 245 images based on the original dataset preparation.
+
+The dataset source and image usage permissions should be documented according to the actual sources used.
+
+## 5. Technologies Used
 
 - Python
 - TensorFlow
 - Keras
+- MobileNetV2
 - NumPy
 - Matplotlib
 - Scikit-learn
 - Next.js
+- TypeScript
+- Tailwind CSS
+- Git and GitHub
 - Vercel
 
-## Evaluation
+## 6. Model Evaluation
 
-The model is evaluated using validation accuracy, validation loss, precision, recall, F1-score, and a confusion matrix.
+The model was evaluated using validation accuracy, validation loss, precision, recall, F1-score, and confusion matrix analysis.
 
-The current experimental results show that further improvement is needed. Final results will be documented after model selection and testing.
+The saved model has been tested using the Python prediction script.
 
-## Project Resources
+Further testing is necessary because some sample images were incorrectly classified. Model performance should therefore be reported using verified evaluation results rather than individual prediction confidence.
+
+## 7. Project Structure
+
+```text
+StationeryDetectionAI/
+│
+├── Dataset/
+│   ├── Sharpener/
+│   ├── erasers/
+│   ├── markers/
+│   ├── pencils/
+│   └── rulers/
+│
+├── Stationery_Detection_AI.ipynb
+├── best_mobilenetv2_stationery.keras
+│
+└── stationery-website/
+    ├── model/
+    ├── src/
+    ├── public/
+    ├── predict.py
+    ├── package.json
+    └── README.md
+```
+
+## 8. Project Resources
 
 - **GitHub Repository:** https://github.com/nabeellha/StationeryDetectionAI
-- **Live Website:** To be added
-- **Project Report:** To be added
-- **Presentation:** To be added
-- **YouTube Video:** To be added
-- **LinkedIn Post:** To be added
+- **Live Website:** To be added after deployment.
+- **Project Report:** To be added.
+- **Presentation:** To be added.
+- **YouTube Video:** To be added.
+- **LinkedIn Post:** To be added.
 
-## Project Status
+## 9. Project Status
+
+The MobileNetV2 model has been trained and saved. A Python prediction script has been implemented and tested locally. The Next.js website has also been developed.
+
+Final deployment, documentation, and submission preparation are in progress.
+
+## 10. Academic Project
+
+Developed as a Deep Learning semester project.
 
 The initial custom CNN has been implemented and trained. Model evaluation, repository organization, and web deployment are in progress.
 
