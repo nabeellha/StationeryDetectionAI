@@ -10,10 +10,13 @@ from pathlib import Path
 
 app = FastAPI(title="Stationery Detection API")
 
-# Allow requests from the Next.js website
+# Allow requests from local development and deployed website
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://stationery-detection-ai.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -49,6 +52,14 @@ models = {
 def home():
     return {
         "message": "Stationery Detection API is running!"
+    }
+
+
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy",
+        "models_loaded": list(models.keys())
     }
 
 
