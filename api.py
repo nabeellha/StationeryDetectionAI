@@ -18,6 +18,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://stationery-detection-ai.vercel.app",
+        "https://stationery-detection-dd0k8osy9-nabiha-asim.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
