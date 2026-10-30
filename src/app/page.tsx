@@ -3,381 +3,689 @@
 
 import { useState } from "react";
 
-const classes = [
-  { name: "Sharpener", icon: "✏️", color: "#e0eaff" },
-  { name: "Erasers", icon: "◻️", color: "#fce7f3" },
-  { name: "Markers", icon: "🖊️", color: "#dcfce7" },
-  { name: "Pencils", icon: "✏️", color: "#fef3c7" },
-  { name: "Rulers", icon: "📏", color: "#ede9fe" },
-];
+const API_URL = "http://127.0.0.1:8000/predict";
 
-const models = [
+type Prediction = {
+  model: string;
+  predicted_class: string;
+  confidence: number;
+  scores: Record<string, number>;
+};
+
+const categories = [
   {
-    name: "Custom CNN",
-    type: "Built from scratch",
-    description:
-      "A convolutional neural network designed to learn visual features from stationery images.",
-    status: "Baseline model",
+    name: "Sharpener",
+    description: "Detect sharpeners from uploaded stationery images.",
+    symbol: "S",
   },
   {
-    name: "MobileNetV2",
-    type: "Transfer learning",
-    description:
-      "A pretrained image model adapted to recognize five stationery categories.",
-    status: "Selected model",
+    name: "Erasers",
+    description: "Identify erasers using the trained detection models.",
+    symbol: "E",
+  },
+  {
+    name: "Markers",
+    description: "Recognize markers from different stationery images.",
+    symbol: "M",
+  },
+  {
+    name: "Pencils",
+    description: "Classify pencils using image recognition.",
+    symbol: "P",
+  },
+  {
+    name: "Rulers",
+    description: "Identify rulers in the uploaded image.",
+    symbol: "R",
+  },
+];
+
+const resources = [
+  {
+    title: "GitHub Repository",
+    description: "Explore the project source code.",
+    symbol: "GH",
+    href: "https://github.com/nabeellha/StationeryDetectionAI",
+  },
+  {
+    title: "Dataset",
+    description: "View the dataset used for training.",
+    symbol: "DS",
+    href: "#",
+  },
+  {
+    title: "CNN Weights",
+    description: "Custom CNN model weights.",
+    symbol: "CNN",
+    href: "#",
+  },
+  {
+    title: "MobileNetV2 Weights",
+    description: "Transfer learning model weights.",
+    symbol: "MV",
+    href: "#",
+  },
+  {
+    title: "Project Report",
+    description: "Read the project documentation.",
+    symbol: "PDF",
+    href: "#",
+  },
+  {
+    title: "Presentation Slides",
+    description: "View the project presentation.",
+    symbol: "PPT",
+    href: "#",
+  },
+  {
+    title: "LinkedIn",
+    description: "Connect and explore the project.",
+    symbol: "IN",
+    href: "#",
   },
 ];
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [modelName, setModelName] = useState("mobilenetv2");
+  const [prediction, setPrediction] = useState<Prediction | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  function handleFileChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const selectedFile = event.target.files?.[0];
+
+    setPrediction(null);
+    setError("");
+
+    if (!selectedFile) {
+      setFile(null);
+      return;
+    }
+
+    if (!selectedFile.type.startsWith("image/")) {
+      setFile(null);
+      setError("Please select a valid image file.");
+      event.target.value = "";
+      return;
+    }
+
+    setFile(selectedFile);
+  }
+
+  function handleRemoveFile() {
+    setFile(null);
+    setPrediction(null);
+    setError("");
+
+    const input = document.getElementById(
+      "image-upload"
+    ) as HTMLInputElement | null;
+
+    if (input) {
+      input.value = "";
+    }
+  }
+
+  async function handlePredict(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    if (!file) {
+      setError("Please upload an image first.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setPrediction(null);
+
+    try {
+      const formData = new FormData();
+
+      formData.append("file", file);
+      formData.append("model_name", modelName);
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Prediction failed.");
+      }
+
+      setPrediction(data as Prediction);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.";
+
+      setError(
+        message.includes("fetch")
+          ? "Could not connect to the prediction server. Make sure your Python API is running."
+          : message
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function closeMobileMenu() {
+    setMobileMenuOpen(false);
+  }
+
+  const navigation = [
+    { label: "Home", href: "#home" },
+    { label: "About", href: "#about" },
+    { label: "Categories", href: "#categories" },
+    { label: "Models", href: "#models" },
+    { label: "Demo", href: "#demo" },
+    { label: "Resources", href: "#resources" },
+  ];
 
   return (
-    <main className="min-h-screen bg-[#f8fafc] text-slate-900">
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a href="#home" className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-2xl text-white">
-              ✦
-            </span>
-            <span>
-              <span className="block text-lg font-extrabold tracking-tight">
-                Stationery<span className="text-indigo-600">AI</span>
-              </span>
-              <span className="text-xs text-slate-500">
-                Intelligent image classification
-              </span>
-            </span>
-          </a>
+    <main className="site-shell">
+      <header className="site-header">
+        <a
+          href="#home"
+          className="logo-mark"
+          onClick={closeMobileMenu}
+        >
+          <span>S</span>
+          StationeryAI
+        </a>
 
-          <button
-            className="rounded-lg border px-3 py-2 md:hidden"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle navigation"
-          >
-            ☰
-          </button>
+        <button
+          type="button"
+          className="menu-toggle"
+          aria-label="Toggle navigation menu"
+          aria-expanded={mobileMenuOpen}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? "×" : "☰"}
+        </button>
 
-          <nav
-            className={`${menuOpen ? "flex" : "hidden"} absolute left-0 right-0 top-full flex-col gap-4 border-b bg-white p-6 text-sm font-medium md:static md:flex md:flex-row md:items-center md:border-0 md:bg-transparent md:p-0`}
-          >
-            <a href="#about" className="hover:text-indigo-600">About</a>
-            <a href="#classes" className="hover:text-indigo-600">Categories</a>
-            <a href="#models" className="hover:text-indigo-600">Models</a>
-            <a href="#results" className="hover:text-indigo-600">Results</a>
-            <a href="#resources" className="hover:text-indigo-600">Resources</a>
+        <nav
+          className={`site-nav ${mobileMenuOpen ? "nav-open" : ""}`}
+        >
+          {navigation.map((item) => (
             <a
-              href="#resources"
-              className="rounded-xl bg-indigo-600 px-5 py-3 text-center font-semibold text-white hover:bg-indigo-700"
+              key={item.label}
+              href={item.href}
+              className="nav-link"
+              onClick={closeMobileMenu}
             >
-              Explore project ↗
+              {item.label}
             </a>
-          </nav>
-        </div>
+          ))}
+
+          <a
+            href="#demo"
+            className="header-button"
+            onClick={closeMobileMenu}
+          >
+            Try the Demo
+          </a>
+        </nav>
       </header>
 
-      <section id="home" className="overflow-hidden">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:grid-cols-2 md:py-28">
-          <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Deep Learning · Computer Vision
+      {/* HERO SECTION */}
+      <section className="hero-section" id="home">
+        <div className="hero-content">
+          <div className="eyebrow">
+            <span className="status-dot" />
+            DEEP LEARNING PROJECT
+          </div>
+
+          <h1>
+            Smart stationery
+            <br />
+            <span className="gradient-text">
+              detection.
+            </span>
+          </h1>
+
+          <p className="hero-description">
+            StationeryAI is an image classification project
+            that uses deep learning to recognize stationery
+            items. Upload an image, choose a model, and see
+            what the system predicts.
+          </p>
+
+          <div className="hero-actions">
+            <a href="#demo" className="primary-button">
+              Try the Demo <span>→</span>
+            </a>
+
+            <a href="#about" className="secondary-button">
+              Explore Project
+            </a>
+          </div>
+
+          <div className="hero-stats">
+            <div className="stat-item">
+              <strong>05</strong>
+              <span>Object Categories</span>
             </div>
 
-            <h1 className="max-w-2xl text-5xl font-black leading-tight tracking-tight sm:text-6xl">
-              Everyday stationery.
-              <span className="mt-2 block text-indigo-600">
-                Recognized by AI.
-              </span>
-            </h1>
+            <div className="stat-item">
+              <strong>02</strong>
+              <span>Deep Learning Models</span>
+            </div>
 
-            <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
-              An image-classification project that explores how deep learning
-              can identify common stationery items using computer vision.
+            <div className="stat-item">
+              <strong>AI</strong>
+              <span>Image Classification</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="hero-art">
+          <div className="hero-orbit orbit-one" />
+          <div className="hero-orbit orbit-two" />
+
+          <div className="hero-text-card">
+            <span className="hero-card-label">
+              STATIONERY RECOGNITION
+            </span>
+
+            <h3>From image to insight.</h3>
+
+            <p>
+              Upload a stationery image and let a trained
+              deep learning model analyze its contents.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a
-                href="#models"
-                className="rounded-xl bg-indigo-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:bg-indigo-700"
-              >
-                Discover the models →
-              </a>
-              <a
-                href="#about"
-                className="rounded-xl border border-slate-300 bg-white px-6 py-3.5 font-semibold hover:border-indigo-300"
-              >
-                Learn about the project
-              </a>
+            <div className="hero-card-tags">
+              <span>Custom CNN</span>
+              <span>MobileNetV2</span>
+              <span>Computer Vision</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT SECTION */}
+      <section className="section" id="about">
+        <div className="section-heading">
+          <span className="section-label">ABOUT THE PROJECT</span>
+
+          <h2 className="section-title">
+            Making stationery recognition
+            <span className="gradient-text"> smarter.</span>
+          </h2>
+
+          <p className="section-description">
+            StationeryAI demonstrates how deep learning
+            techniques can be used to classify everyday
+            stationery objects through image recognition.
+          </p>
+        </div>
+
+        <div className="process-grid">
+          <article className="process-card">
+            <div className="process-number">01</div>
+            <h3>Upload an Image</h3>
+            <p>
+              Select an image of a stationery item from
+              your device.
+            </p>
+          </article>
+
+          <article className="process-card">
+            <div className="process-number">02</div>
+            <h3>Choose a Model</h3>
+            <p>
+              Select either the Custom CNN or MobileNetV2
+              model for prediction.
+            </p>
+          </article>
+
+          <article className="process-card">
+            <div className="process-number">03</div>
+            <h3>Get Prediction</h3>
+            <p>
+              View the predicted stationery category and
+              the confidence scores.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      {/* CATEGORIES SECTION */}
+      <section className="section section-band" id="categories">
+        <div className="section-heading">
+          <span className="section-label">WHAT WE DETECT</span>
+
+          <h2 className="section-title">
+            Five stationery categories.
+          </h2>
+
+          <p className="section-description">
+            The project currently focuses on recognizing
+            these five stationery classes.
+          </p>
+        </div>
+
+        <div className="category-grid">
+          {categories.map((category) => (
+            <article className="category-card" key={category.name}>
+              <div className="category-icon">
+                {category.symbol}
+              </div>
+
+              <h3>{category.name}</h3>
+              <p>{category.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* MODELS SECTION */}
+      <section className="section" id="models">
+        <div className="section-heading">
+          <span className="section-label">OUR MODELS</span>
+
+          <h2 className="section-title">
+            Two approaches to
+            <span className="gradient-text"> learning.</span>
+          </h2>
+
+          <p className="section-description">
+            Compare a custom-built Convolutional Neural
+            Network with a transfer learning approach.
+          </p>
+        </div>
+
+        <div className="model-grid">
+          <article className="model-card">
+            <div className="model-symbol">CNN</div>
+
+            <h3>Custom CNN</h3>
+
+            <p>
+              A Convolutional Neural Network built using
+              convolution, pooling, and dense layers to
+              learn image features from the training data.
+            </p>
+
+            <span className="model-tag">
+              Built from scratch
+            </span>
+          </article>
+
+          <article className="model-card model-card-highlight">
+            <div className="model-symbol violet-symbol">
+              MV
             </div>
 
-            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-slate-500">
-              <span>✓ 5 stationery categories</span>
-              <span>✓ CNN + transfer learning</span>
-              <span>✓ Python & TensorFlow</span>
+            <h3>MobileNetV2</h3>
+
+            <p>
+              A lightweight pretrained convolutional
+              neural network used through transfer learning
+              for stationery image classification.
+            </p>
+
+            <span className="model-tag">
+              Transfer learning
+            </span>
+          </article>
+        </div>
+      </section>
+
+      {/* DEMO SECTION */}
+      <section className="section section-band" id="demo">
+        <div className="section-heading">
+          <span className="section-label">LIVE DEMONSTRATION</span>
+
+          <h2 className="section-title">
+            Try StationeryAI.
+          </h2>
+
+          <p className="section-description">
+            Upload an image and select a model to see
+            the prediction.
+          </p>
+        </div>
+
+        <div className="demo-panel">
+          <div className="demo-intro">
+            <span className="section-label">
+              IMAGE CLASSIFICATION
+            </span>
+
+            <h3>
+              Let&apos;s recognize your stationery.
+            </h3>
+
+            <p>
+              Choose an image file, select your preferred
+              model, and click the prediction button.
+              The result will appear here.
+            </p>
+
+            <div className="demo-features">
+              <div className="demo-feature">
+                <span>✦</span>
+                Image upload
+              </div>
+
+              <div className="demo-feature">
+                <span>✦</span>
+                Two model choices
+              </div>
+
+              <div className="demo-feature">
+                <span>✦</span>
+                Prediction confidence scores
+              </div>
             </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-6 rounded-[3rem] bg-indigo-200/40 blur-3xl" />
-            <div className="relative rounded-[2rem] border border-white bg-white p-5 shadow-2xl shadow-indigo-100 sm:p-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-500">
-                    PROJECT OVERVIEW
-                  </p>
-                  <h2 className="mt-1 text-2xl font-bold">Meet the classes</h2>
-                </div>
-                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
-                  5 classes
-                </span>
+          <div>
+            <form className="demo-form" onSubmit={handlePredict}>
+              <div className="form-group">
+                <label htmlFor="model-select">
+                  Select Deep Learning Model
+                </label>
+
+                <select
+                  id="model-select"
+                  className="form-control"
+                  value={modelName}
+                  onChange={(event) => {
+                    setModelName(event.target.value);
+                    setPrediction(null);
+                    setError("");
+                  }}
+                >
+                  <option value="mobilenetv2">
+                    MobileNetV2
+                  </option>
+
+                  <option value="cnn">
+                    Custom CNN
+                  </option>
+                </select>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {classes.map((item) => (
-                  <div
-                    key={item.name}
-                    className="rounded-2xl border border-slate-100 p-4 transition hover:-translate-y-1 hover:shadow-md"
-                    style={{ backgroundColor: item.color }}
-                  >
-                    <div className="flex h-14 items-center justify-center text-4xl">
-                      {item.icon}
-                    </div>
-                    <p className="mt-3 text-center font-bold">{item.name}</p>
-                    <p className="mt-1 text-center text-xs text-slate-500">
-                      Image category
+              <div className="form-group">
+                <label htmlFor="image-upload">
+                  Upload Stationery Image
+                </label>
+
+                <label className="upload-area" htmlFor="image-upload">
+                  <strong>
+                    {file ? "Image selected" : "Choose an image"}
+                  </strong>
+
+                  <span>
+                    {file
+                      ? "Your file is ready for prediction."
+                      : "Click here to browse your device"}
+                  </span>
+
+                  <small>Supported image formats</small>
+                </label>
+
+                <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  hidden
+                />
+
+                {file && (
+                  <div>
+                    <p className="file-name">
+                      Selected file: {file.name}
                     </p>
+
+                    <button
+                      type="button"
+                      className="remove-file"
+                      onClick={handleRemoveFile}
+                    >
+                      Remove file
+                    </button>
                   </div>
-                ))}
-                <div className="flex min-h-28 flex-col items-center justify-center rounded-2xl border border-dashed border-indigo-200 bg-indigo-50 p-3 text-center">
-                  <span className="text-2xl">🧠</span>
-                  <span className="mt-2 text-sm font-bold text-indigo-700">
-                    Deep learning
-                  </span>
-                  <span className="mt-1 text-xs text-slate-500">
-                    Image recognition
-                  </span>
-                </div>
+                )}
               </div>
 
-              <div className="mt-5 rounded-2xl bg-slate-900 p-5 text-white">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-300">
-                    Classification pipeline
-                  </span>
-                  <span className="text-xs text-emerald-300">PROJECT FLOW</span>
+              <button
+                type="submit"
+                className="primary-button demo-submit"
+                disabled={!file || loading}
+              >
+                {loading
+                  ? "Analyzing Image..."
+                  : "Predict Stationery →"}
+              </button>
+
+              {error && (
+                <div className="error-message" role="alert">
+                  {error}
                 </div>
-                <div className="mt-4 flex items-center justify-between gap-2 text-center text-xs sm:text-sm">
-                  <div className="flex-1 rounded-xl bg-white/10 p-3">Image</div>
-                  <span className="text-indigo-300">→</span>
-                  <div className="flex-1 rounded-xl bg-white/10 p-3">Model</div>
-                  <span className="text-indigo-300">→</span>
-                  <div className="flex-1 rounded-xl bg-white/10 p-3">Prediction</div>
+              )}
+            </form>
+
+            {prediction && (
+              <div className="result-panel">
+                <h4>Prediction Result</h4>
+
+                <div className="result-highlight">
+                  {prediction.predicted_class}
+                </div>
+
+                <div className="result-confidence">
+                  Confidence:{" "}
+                  {(prediction.confidence * 100).toFixed(2)}%
+                </div>
+
+                <h4>Class Confidence Scores</h4>
+
+                <div className="score-list">
+                  {Object.entries(prediction.scores).map(
+                    ([className, score]) => {
+                      const percentage = Math.max(
+                        0,
+                        Math.min(100, score * 100)
+                      );
+
+                      return (
+                        <div className="score-item" key={className}>
+                          <div className="score-heading">
+                            <span>{className}</span>
+                            <span>
+                              {percentage.toFixed(2)}%
+                            </span>
+                          </div>
+
+                          <div className="score-track">
+                            <div
+                              className="score-bar"
+                              style={{
+                                width: `${percentage}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    }
+                  )}
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
 
-      <section id="about" className="border-y border-slate-200 bg-white py-20">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 md:grid-cols-2">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-indigo-600">
-              About the project
-            </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Teaching a computer to recognize stationery
-            </h2>
-            <p className="mt-5 leading-8 text-slate-600">
-              Stationery Detection AI is a student deep-learning project that
-              classifies stationery images into five predefined categories.
-              It explores image preprocessing, model training, prediction,
-              and performance evaluation.
-            </p>
-            <p className="mt-4 leading-8 text-slate-600">
-              The project compares a custom Convolutional Neural Network
-              (CNN) with MobileNetV2, a model architecture commonly used for
-              efficient image recognition.
-            </p>
-          </div>
+      {/* RESOURCES SECTION */}
+      <section className="section" id="resources">
+        <div className="section-heading">
+          <span className="section-label">PROJECT RESOURCES</span>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {[
-              ["01", "Image input", "Provide a stationery image to the model."],
-              ["02", "Preprocessing", "Prepare the image in the model's expected format."],
-              ["03", "Classification", "The model estimates scores for five classes."],
-              ["04", "Evaluation", "Assess predictions with suitable metrics."],
-            ].map(([number, title, description]) => (
-              <div key={number} className="rounded-2xl border border-slate-200 p-6">
-                <span className="text-sm font-extrabold text-indigo-600">{number}</span>
-                <h3 className="mt-4 text-lg font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="classes" className="py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-indigo-600">
-              Classification labels
-            </p>
-            <h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">
-              Five categories. One project.
-            </h2>
-            <p className="mt-4 leading-7 text-slate-600">
-              These are the five target classes used by the current model.
-            </p>
-          </div>
-
-          <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {classes.map((item, index) => (
-              <div key={item.name} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                <div className="flex h-20 items-center justify-center rounded-2xl text-5xl" style={{ backgroundColor: item.color }}>
-                  {item.icon}
-                </div>
-                <p className="mt-5 text-xs font-bold uppercase tracking-wider text-slate-400">
-                  CLASS 0{index + 1}
-                </p>
-                <h3 className="mt-1 text-xl font-bold">{item.name}</h3>
-                <p className="mt-2 text-sm text-slate-500">Target label</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="models" className="bg-slate-900 py-20 text-white">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-indigo-300">
-            Model development
-          </p>
-          <h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">
-            Two approaches to image recognition
+          <h2 className="section-title">
+            Explore the project.
           </h2>
-          <p className="mt-4 max-w-2xl leading-7 text-slate-300">
-            Comparing a model trained from scratch with transfer learning helps
-            us explore different ways to approach image classification.
+
+          <p className="section-description">
+            Find the project repository, model resources,
+            documentation, and presentation materials.
           </p>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {models.map((model, index) => (
-              <article key={model.name} className="rounded-3xl border border-white/10 bg-white/[0.06] p-7">
-                <div className="flex items-start justify-between gap-4">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/20 text-xl font-bold text-indigo-200">
-                    {index === 0 ? "CNN" : "M"}
-                  </span>
-                  <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-slate-300">
-                    {model.status}
-                  </span>
-                </div>
-                <h3 className="mt-6 text-2xl font-bold">{model.name}</h3>
-                <p className="mt-1 text-sm text-indigo-200">{model.type}</p>
-                <p className="mt-4 leading-7 text-slate-300">{model.description}</p>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-amber-300/20 bg-amber-200/10 p-5 text-sm leading-6 text-amber-100">
-            Model performance must be reported using the final evaluation results.
-            We will connect the verified metrics and downloadable model files
-            before publishing the project.
-          </div>
         </div>
-      </section>
 
-      <section id="results" className="py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-indigo-600">
-            Testing and evaluation
-          </p>
-          <h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">
-            Results you can verify
-          </h2>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-600">
-            We will publish the final evaluation report, including accuracy,
-            class-wise precision and recall, a confusion matrix, and examples
-            of model predictions. Metrics should be linked to the actual
-            evaluation code and results rather than presented as guarantees.
-          </p>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <span className="text-2xl">📊</span>
-              <h3 className="mt-4 font-bold">Performance metrics</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Accuracy, precision, recall, and F1-score.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <span className="text-2xl">🔎</span>
-              <h3 className="mt-4 font-bold">Prediction examples</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Show predicted labels and confidence scores from actual model runs.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <span className="text-2xl">🧪</span>
-              <h3 className="mt-4 font-bold">Reproducible testing</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Provide a Python script and instructions for loading the saved model.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="resources" className="bg-indigo-50 py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-indigo-600">
-            Project resources
-          </p>
-          <h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">
-            Everything in one place
-          </h2>
-          <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-            The final version will link to the public source repository,
-            model files, project report, presentation, and video demonstration.
-          </p>
-
-          <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              ["⌘", "Source code", "GitHub repository and setup instructions."],
-              ["🧠", "Trained model", "Downloadable model weights and inference script."],
-              ["📄", "Project report", "Problem statement, methodology, and results."],
-              ["🎞️", "Presentation", "Slides explaining the project workflow."],
-              ["▶", "Video demonstration", "Project walkthrough and model demonstration."],
-              ["↗", "Project publication", "Share the completed project on LinkedIn."],
-            ].map(([icon, title, description]) => (
-              <div key={title} className="rounded-2xl border border-indigo-100 bg-white p-6">
-                <span className="text-3xl">{icon}</span>
-                <h3 className="mt-4 text-lg font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-                <span className="mt-4 inline-block text-sm font-semibold text-indigo-600">
-                  Link to be added
-                </span>
+        <div className="resource-grid">
+          {resources.map((resource) => (
+            <a
+              className="resource-card"
+              href={resource.href}
+              key={resource.title}
+              target={
+                resource.href.startsWith("http")
+                  ? "_blank"
+                  : undefined
+              }
+              rel={
+                resource.href.startsWith("http")
+                  ? "noopener noreferrer"
+                  : undefined
+              }
+            >
+              <div className="resource-icon">
+                {resource.symbol}
               </div>
-            ))}
-          </div>
+
+              <div>
+                <strong>{resource.title}</strong>
+                <small>{resource.description}</small>
+              </div>
+            </a>
+          ))}
         </div>
       </section>
 
-      <footer className="bg-slate-950 py-10 text-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-lg font-extrabold">
-              Stationery<span className="text-indigo-400">AI</span>
-            </p>
-            <p className="mt-1 text-sm text-slate-400">
-              A student project in deep learning and computer vision.
-            </p>
-          </div>
-          <p className="text-sm text-slate-500">
-            Built with Next.js · Python · TensorFlow
+      {/* FOOTER */}
+      <footer className="site-footer">
+        <div>
+          <span className="footer-brand">StationeryAI</span>
+          <p>
+            A deep learning project for stationery image
+            classification.
           </p>
         </div>
+
+        <span>© 2026 StationeryAI. All rights reserved.</span>
       </footer>
     </main>
   );
