@@ -73,9 +73,9 @@ const resources = [
     href: "https://docs.google.com/document/d/1kFVKJi_SbUsmS1MBWKSGherQK2c0KkLD/edit?usp=sharing&ouid=110132836728801374447&rtpof=true&sd=true",
   },
   {
-    title: "Project Video Demo",
-    description: "Watch the video presentation.",
-    symbol: "YT",
+    title: "Presentation Slides",
+    description: "View the project presentation.",
+    symbol: "PPT",
     href: "https://youtu.be/_W8lHCi85hs",
   },
   {
