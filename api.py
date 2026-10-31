@@ -8,11 +8,10 @@ import tensorflow as tf
 import io
 from pathlib import Path
 import gdown
-import os
 
 app = FastAPI(title="Stationery Detection API")
 
-# Allow requests from local development and deployed website
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -47,6 +46,8 @@ MODEL_FILES = {
     },
 }
 
+
+# Download models if they are missing
 def download_models():
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -74,6 +75,8 @@ def download_models():
 
 download_models()
 
+
+# Load trained models
 models = {
     name: tf.keras.models.load_model(
         MODEL_DIR / details["filename"],
@@ -82,7 +85,10 @@ models = {
     for name, details in MODEL_FILES.items()
 }
 
+print("All models loaded successfully!")
 
+
+# Home endpoint
 @app.get("/")
 def home():
     return {
@@ -90,6 +96,7 @@ def home():
     }
 
 
+# Health endpoint
 @app.get("/health")
 def health():
     return {
@@ -98,6 +105,7 @@ def health():
     }
 
 
+# Image prediction endpoint
 @app.post("/predict")
 async def predict(
     file: UploadFile = File(...),
@@ -110,34 +118,47 @@ async def predict(
         )
 
     try:
-        # Read and prepare the uploaded image
+        # Read uploaded image
         contents = await file.read()
 
         image = Image.open(
             io.BytesIO(contents)
         ).convert("RGB")
 
+        # Resize image
         image = image.resize((224, 224))
 
+        # Convert image into NumPy array
         image_array = np.asarray(
             image,
             dtype=np.float32
         )
 
+        # Add batch dimension
         image_array = np.expand_dims(
             image_array,
             axis=0
         )
 
-        # Each saved model contains its own Rescaling layer.
-        # Do not preprocess the image again here.
+        # Run prediction using selected model
         predictions = models[model_name].predict(
             image_array,
             verbose=0
         )[0]
 
+        # Diagnostic logs for debugging
+        print("\n----- PREDICTION DEBUG -----")
+        print("Model selected:", model_name)
+        print("Uploaded image:", file.filename)
+        print("Image shape:", image_array.shape)
+        print("Image mean:", float(np.mean(image_array)))
+        print("Raw predictions:", predictions)
+        print("---------------------------\n")
+
+        # Get predicted class
         predicted_index = int(np.argmax(predictions))
 
+        # Prepare response
         return {
             "model": model_name,
             "predicted_class": CLASS_NAMES[predicted_index],
@@ -154,6 +175,8 @@ async def predict(
         }
 
     except Exception as error:
+        print("Prediction error:", str(error))
+
         return JSONResponse(
             status_code=400,
             content={"error": str(error)},
