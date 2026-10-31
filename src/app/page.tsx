@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -6,6 +5,7 @@ import { useState } from "react";
 const API_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/predict`
   : "http://127.0.0.1:8000/predict";
+
 type Prediction = {
   model: string;
   predicted_class: string;
@@ -52,37 +52,37 @@ const resources = [
     title: "Dataset",
     description: "View the dataset used for training.",
     symbol: "DS",
-    href: "#",
+    href: "https://drive.google.com/drive/folders/1Gk1KGZOA6_4S3qcpfHhSaQwiMgvN4ssQ?usp=sharing",
   },
   {
-    title: "CNN Weights",
-    description: "Custom CNN model weights.",
+    title: "CNN Model",
+    description: "Access the trained custom CNN model.",
     symbol: "CNN",
-    href: "#",
+    href: "https://drive.google.com/file/d/1fBR7Yl2JoKskcakVHYpmFTNszQgqHRvq/view?usp=sharing",
   },
   {
-    title: "MobileNetV2 Weights",
-    description: "Transfer learning model weights.",
+    title: "MobileNetV2 Model",
+    description: "Access the trained MobileNetV2 model.",
     symbol: "MV",
-    href: "#",
+    href: "https://drive.google.com/file/d/1z9Gg6Tlg5q_LFsVwKO3gEolZs12g8HMG/view?usp=sharing",
   },
   {
     title: "Project Report",
-    description: "Read the project documentation.",
+    description: "Read the complete project documentation.",
     symbol: "PDF",
-    href: "#",
+    href: "https://docs.google.com/document/d/1kFVKJi_SbUsmS1MBWKSGherQK2c0KkLD/edit?usp=sharing&ouid=110132836728801374447&rtpof=true&sd=true",
   },
   {
-    title: "Presentation Slides",
-    description: "View the project presentation.",
-    symbol: "PPT",
-    href: "#",
+    title: "Demo Video",
+    description: "Watch the StationeryAI project demonstration.",
+    symbol: "▶",
+    href: "https://youtu.be/_W8lHCi85hs",
   },
   {
-    title: "LinkedIn",
-    description: "Connect and explore the project.",
+    title: "LinkedIn Post",
+    description: "View the project announcement on LinkedIn.",
     symbol: "IN",
-    href: "#",
+    href: "https://lnkd.in/p/drTXGRvY",
   },
 ];
 
@@ -641,8 +641,8 @@ export default function Home() {
           </h2>
 
           <p className="section-description">
-            Find the project repository, model resources,
-            documentation, and presentation materials.
+            Find the project repository, dataset, trained models,
+            documentation, demo video, and LinkedIn post.
           </p>
         </div>
 
@@ -652,16 +652,8 @@ export default function Home() {
               className="resource-card"
               href={resource.href}
               key={resource.title}
-              target={
-                resource.href.startsWith("http")
-                  ? "_blank"
-                  : undefined
-              }
-              rel={
-                resource.href.startsWith("http")
-                  ? "noopener noreferrer"
-                  : undefined
-              }
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <div className="resource-icon">
                 {resource.symbol}
