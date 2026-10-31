@@ -55,32 +55,32 @@ const resources = [
     href: "https://drive.google.com/drive/folders/1Gk1KGZOA6_4S3qcpfHhSaQwiMgvN4ssQ?usp=sharing",
   },
   {
-    title: "CNN Model",
-    description: "Access the trained custom CNN model.",
+    title: "CNN Weights",
+    description: "Custom CNN model weights.",
     symbol: "CNN",
     href: "https://drive.google.com/file/d/1fBR7Yl2JoKskcakVHYpmFTNszQgqHRvq/view?usp=sharing",
   },
   {
-    title: "MobileNetV2 Model",
-    description: "Access the trained MobileNetV2 model.",
+    title: "MobileNetV2 Weights",
+    description: "Transfer learning model weights.",
     symbol: "MV",
     href: "https://drive.google.com/file/d/1z9Gg6Tlg5q_LFsVwKO3gEolZs12g8HMG/view?usp=sharing",
   },
   {
     title: "Project Report",
-    description: "Read the complete project documentation.",
+    description: "Read the project documentation.",
     symbol: "PDF",
     href: "https://docs.google.com/document/d/1kFVKJi_SbUsmS1MBWKSGherQK2c0KkLD/edit?usp=sharing&ouid=110132836728801374447&rtpof=true&sd=true",
   },
   {
-    title: "Demo Video",
-    description: "Watch the StationeryAI project demonstration.",
-    symbol: "▶",
+    title: "Project Video Demo",
+    description: "Watch the video presentation.",
+    symbol: "YT",
     href: "https://youtu.be/_W8lHCi85hs",
   },
   {
-    title: "LinkedIn Post",
-    description: "View the project announcement on LinkedIn.",
+    title: "LinkedIn",
+    description: "Connect and explore the project.",
     symbol: "IN",
     href: "https://lnkd.in/p/drTXGRvY",
   },
@@ -94,9 +94,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  function handleFileChange(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
 
     setPrediction(null);
@@ -131,9 +129,7 @@ export default function Home() {
     }
   }
 
-  async function handlePredict(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
+  async function handlePredict(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!file) {
@@ -195,11 +191,7 @@ export default function Home() {
   return (
     <main className="site-shell">
       <header className="site-header">
-        <a
-          href="#home"
-          className="logo-mark"
-          onClick={closeMobileMenu}
-        >
+        <a href="#home" className="logo-mark" onClick={closeMobileMenu}>
           <span>S</span>
           StationeryAI
         </a>
@@ -214,9 +206,7 @@ export default function Home() {
           {mobileMenuOpen ? "×" : "☰"}
         </button>
 
-        <nav
-          className={`site-nav ${mobileMenuOpen ? "nav-open" : ""}`}
-        >
+        <nav className={`site-nav ${mobileMenuOpen ? "nav-open" : ""}`}>
           {navigation.map((item) => (
             <a
               key={item.label}
@@ -228,11 +218,7 @@ export default function Home() {
             </a>
           ))}
 
-          <a
-            href="#demo"
-            className="header-button"
-            onClick={closeMobileMenu}
-          >
+          <a href="#demo" className="header-button" onClick={closeMobileMenu}>
             Try the Demo
           </a>
         </nav>
@@ -249,16 +235,13 @@ export default function Home() {
           <h1>
             Smart stationery
             <br />
-            <span className="gradient-text">
-              detection.
-            </span>
+            <span className="gradient-text">detection.</span>
           </h1>
 
           <p className="hero-description">
-            StationeryAI is an image classification project
-            that uses deep learning to recognize stationery
-            items. Upload an image, choose a model, and see
-            what the system predicts.
+            StationeryAI is an image classification project that uses deep
+            learning to recognize stationery items. Upload an image, choose a
+            model, and see what the system predicts.
           </p>
 
           <div className="hero-actions">
@@ -294,15 +277,13 @@ export default function Home() {
           <div className="hero-orbit orbit-two" />
 
           <div className="hero-text-card">
-            <span className="hero-card-label">
-              STATIONERY RECOGNITION
-            </span>
+            <span className="hero-card-label">STATIONERY RECOGNITION</span>
 
             <h3>From image to insight.</h3>
 
             <p>
-              Upload a stationery image and let a trained
-              deep learning model analyze its contents.
+              Upload a stationery image and let a trained deep learning model
+              analyze its contents.
             </p>
 
             <div className="hero-card-tags">
@@ -325,9 +306,8 @@ export default function Home() {
           </h2>
 
           <p className="section-description">
-            StationeryAI demonstrates how deep learning
-            techniques can be used to classify everyday
-            stationery objects through image recognition.
+            StationeryAI demonstrates how deep learning techniques can be used
+            to classify everyday stationery objects through image recognition.
           </p>
         </div>
 
@@ -335,18 +315,14 @@ export default function Home() {
           <article className="process-card">
             <div className="process-number">01</div>
             <h3>Upload an Image</h3>
-            <p>
-              Select an image of a stationery item from
-              your device.
-            </p>
+            <p>Select an image of a stationery item from your device.</p>
           </article>
 
           <article className="process-card">
             <div className="process-number">02</div>
             <h3>Choose a Model</h3>
             <p>
-              Select either the Custom CNN or MobileNetV2
-              model for prediction.
+              Select either the Custom CNN or MobileNetV2 model for prediction.
             </p>
           </article>
 
@@ -354,8 +330,7 @@ export default function Home() {
             <div className="process-number">03</div>
             <h3>Get Prediction</h3>
             <p>
-              View the predicted stationery category and
-              the confidence scores.
+              View the predicted stationery category and the confidence scores.
             </p>
           </article>
         </div>
@@ -366,22 +341,18 @@ export default function Home() {
         <div className="section-heading">
           <span className="section-label">WHAT WE DETECT</span>
 
-          <h2 className="section-title">
-            Five stationery categories.
-          </h2>
+          <h2 className="section-title">Five stationery categories.</h2>
 
           <p className="section-description">
-            The project currently focuses on recognizing
-            these five stationery classes.
+            The project currently focuses on recognizing these five stationery
+            classes.
           </p>
         </div>
 
         <div className="category-grid">
           {categories.map((category) => (
             <article className="category-card" key={category.name}>
-              <div className="category-icon">
-                {category.symbol}
-              </div>
+              <div className="category-icon">{category.symbol}</div>
 
               <h3>{category.name}</h3>
               <p>{category.description}</p>
@@ -401,8 +372,8 @@ export default function Home() {
           </h2>
 
           <p className="section-description">
-            Compare a custom-built Convolutional Neural
-            Network with a transfer learning approach.
+            Compare a custom-built Convolutional Neural Network with a transfer
+            learning approach.
           </p>
         </div>
 
@@ -413,32 +384,24 @@ export default function Home() {
             <h3>Custom CNN</h3>
 
             <p>
-              A Convolutional Neural Network built using
-              convolution, pooling, and dense layers to
-              learn image features from the training data.
+              A Convolutional Neural Network built using convolution, pooling,
+              and dense layers to learn image features from the training data.
             </p>
 
-            <span className="model-tag">
-              Built from scratch
-            </span>
+            <span className="model-tag">Built from scratch</span>
           </article>
 
           <article className="model-card model-card-highlight">
-            <div className="model-symbol violet-symbol">
-              MV
-            </div>
+            <div className="model-symbol violet-symbol">MV</div>
 
             <h3>MobileNetV2</h3>
 
             <p>
-              A lightweight pretrained convolutional
-              neural network used through transfer learning
-              for stationery image classification.
+              A lightweight pretrained convolutional neural network used through
+              transfer learning for stationery image classification.
             </p>
 
-            <span className="model-tag">
-              Transfer learning
-            </span>
+            <span className="model-tag">Transfer learning</span>
           </article>
         </div>
       </section>
@@ -448,30 +411,22 @@ export default function Home() {
         <div className="section-heading">
           <span className="section-label">LIVE DEMONSTRATION</span>
 
-          <h2 className="section-title">
-            Try StationeryAI.
-          </h2>
+          <h2 className="section-title">Try StationeryAI.</h2>
 
           <p className="section-description">
-            Upload an image and select a model to see
-            the prediction.
+            Upload an image and select a model to see the prediction.
           </p>
         </div>
 
         <div className="demo-panel">
           <div className="demo-intro">
-            <span className="section-label">
-              IMAGE CLASSIFICATION
-            </span>
+            <span className="section-label">IMAGE CLASSIFICATION</span>
 
-            <h3>
-              Let&apos;s recognize your stationery.
-            </h3>
+            <h3>Let&apos;s recognize your stationery.</h3>
 
             <p>
-              Choose an image file, select your preferred
-              model, and click the prediction button.
-              The result will appear here.
+              Choose an image file, select your preferred model, and click the
+              prediction button. The result will appear here.
             </p>
 
             <div className="demo-features">
@@ -509,20 +464,13 @@ export default function Home() {
                     setError("");
                   }}
                 >
-                  <option value="mobilenetv2">
-                    MobileNetV2
-                  </option>
-
-                  <option value="cnn">
-                    Custom CNN
-                  </option>
+                  <option value="mobilenetv2">MobileNetV2</option>
+                  <option value="cnn">Custom CNN</option>
                 </select>
               </div>
 
               <div className="form-group">
-                <label htmlFor="image-upload">
-                  Upload Stationery Image
-                </label>
+                <label htmlFor="image-upload">Upload Stationery Image</label>
 
                 <label className="upload-area" htmlFor="image-upload">
                   <strong>
@@ -548,9 +496,7 @@ export default function Home() {
 
                 {file && (
                   <div>
-                    <p className="file-name">
-                      Selected file: {file.name}
-                    </p>
+                    <p className="file-name">Selected file: {file.name}</p>
 
                     <button
                       type="button"
@@ -568,9 +514,7 @@ export default function Home() {
                 className="primary-button demo-submit"
                 disabled={!file || loading}
               >
-                {loading
-                  ? "Analyzing Image..."
-                  : "Predict Stationery →"}
+                {loading ? "Analyzing Image..." : "Predict Stationery →"}
               </button>
 
               {error && (
@@ -589,8 +533,7 @@ export default function Home() {
                 </div>
 
                 <div className="result-confidence">
-                  Confidence:{" "}
-                  {(prediction.confidence * 100).toFixed(2)}%
+                  Confidence: {(prediction.confidence * 100).toFixed(2)}%
                 </div>
 
                 <h4>Class Confidence Scores</h4>
@@ -607,9 +550,7 @@ export default function Home() {
                         <div className="score-item" key={className}>
                           <div className="score-heading">
                             <span>{className}</span>
-                            <span>
-                              {percentage.toFixed(2)}%
-                            </span>
+                            <span>{percentage.toFixed(2)}%</span>
                           </div>
 
                           <div className="score-track">
@@ -636,13 +577,11 @@ export default function Home() {
         <div className="section-heading">
           <span className="section-label">PROJECT RESOURCES</span>
 
-          <h2 className="section-title">
-            Explore the project.
-          </h2>
+          <h2 className="section-title">Explore the project.</h2>
 
           <p className="section-description">
-            Find the project repository, dataset, trained models,
-            documentation, demo video, and LinkedIn post.
+            Find the project repository, model resources, documentation, and
+            presentation materials.
           </p>
         </div>
 
@@ -652,12 +591,16 @@ export default function Home() {
               className="resource-card"
               href={resource.href}
               key={resource.title}
-              target="_blank"
-              rel="noopener noreferrer"
+              target={
+                resource.href.startsWith("http") ? "_blank" : undefined
+              }
+              rel={
+                resource.href.startsWith("http")
+                  ? "noopener noreferrer"
+                  : undefined
+              }
             >
-              <div className="resource-icon">
-                {resource.symbol}
-              </div>
+              <div className="resource-icon">{resource.symbol}</div>
 
               <div>
                 <strong>{resource.title}</strong>
@@ -672,10 +615,7 @@ export default function Home() {
       <footer className="site-footer">
         <div>
           <span className="footer-brand">StationeryAI</span>
-          <p>
-            A deep learning project for stationery image
-            classification.
-          </p>
+          <p>A deep learning project for stationery image classification.</p>
         </div>
 
         <span>© 2026 StationeryAI. All rights reserved.</span>
